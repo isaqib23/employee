@@ -38,7 +38,7 @@
 					<div class="col-1 p-2 text-center">
 						<p class="mt-0 mb-0">
 							<label class="checkboxRadio">
-								<input value="<?= $key+1 ?>" name="g<?= $key?>" type="radio"  />
+								<input value="<?= $key1+1 ?>" name="<?= $question->id?>" type="radio"  />
 								<span class="primary"></span>
 							</label>
 						</p>
@@ -49,7 +49,7 @@
 		<div class="col-12 p-2 bg-secondary text-white">
 			<p class="mt-0 mb-0">{{$question->question}}</p>
 		</div>
-		<textarea rows="10" class="form-control" placeholder="Start typing here..."></textarea>
+		<textarea name="<?= $question->id?>" rows="10" class="form-control" placeholder="Start typing here..."></textarea>
 		@endif
 	@endif
 @endforeach

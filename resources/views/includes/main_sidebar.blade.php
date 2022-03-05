@@ -87,9 +87,18 @@
                     <a href="{{ route('employee.evaluation') }}" class="nav-link">
                         <i class="nav-icon fas fa-tachometer-alt"></i>
                         <p>
-                                Employee Evaluation
+                                Self Evaluation
                             
                         </p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a
+                        href="{{ route('employee.employees.index') }}"
+                        class="nav-link"
+                    >
+                        <i class="far fa-circle nav-icon"></i>
+                        <p>List Employees</p>
                     </a>
                 </li>
                 {{-- @include('includes.employee.sidebar_items') --}}

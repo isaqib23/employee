@@ -13,8 +13,15 @@ use Illuminate\Support\Facades\Gate;
 class EmployeeController extends Controller
 {
     public function index() {
+        if(Auth::user()->can_full_review){
+            $employees = Employee::where("user_id","<>",Auth::user()->id)->get();
+        }elseif(Auth::user()->is_hod){
+            $employees = Employee::where("user_id","<>",Auth::user()->id)->where("hod_id",Auth::user()->employee->hod_id)->get();
+        }else{
+            $employees = Employee::where("user_id","<>",Auth::user()->id)->where("hod_id",Auth::user()->employee->hod_id)->get();
+        }
         $data = [
-            'employee' => Auth::user()->employee
+            'employees' => $employees
         ];
         return view('employee.index')->with($data);
     }

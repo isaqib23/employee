@@ -1,5 +1,8 @@
 @extends('layouts.app')        
-
+<?php
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Request;
+?>
 @section('content')
 <style>
 	@keyframes check {0% {height: 0;width: 0;}
@@ -68,16 +71,41 @@
 		}
 </style>
 
-<form method="POST" action="{{ route('employee.evaluation_store') }}">
-@csrf
-	@if(Auth::user()->can_full_review)
-	@include("evaluation.hr")
-	@elseif(Auth::user()->is_hod)
-	@include("evaluation.manager")
-	@else
-	@include("evaluation.self")
-	@endif
+@if($evaluationCheck)
+<div class="text-center p-2 col-md-12 text-white bg-primary border-top">
+	<h3>You Already Evaluate to this Employee</h3>
+</div>
+@else
 
-	<button class="btn btn-success btn-lg btn-block mt-3 mb-3">Submit</button>
-</form>
+	<form method="POST" action="{{ route('employee.evaluation_store') }}">
+	@csrf
+		@if(Auth::user()->can_full_review)
+			@if(Request::segment(2))
+				@include("evaluation.hr")
+			@else
+				@include("evaluation.self")
+			@endif
+		@elseif(Auth::user()->is_hod)
+			@if(Request::segment(2))
+				@include("evaluation.manager")
+			@else
+				@include("evaluation.self")
+			@endif
+		@else
+			@if(Request::segment(2))
+			@include("evaluation.peer")
+			@else
+				@include("evaluation.self")
+			@endif
+		@endif
+
+		<?php
+
+	
+
+	$user_id = (Request::segment(2)) ? base64_decode(Request::segment(2)) : Auth::user()->id ?>
+		<input type="hidden" name="user_id" value="{{$user_id}}">
+		<button class="btn btn-success btn-lg btn-block mt-3 mb-3">Submit</button>
+	</form>
+@endif
 @endsection

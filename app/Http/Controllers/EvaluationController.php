@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\EvaluationModel;
+use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -10,18 +11,45 @@ use Illuminate\Support\Facades\DB;
 class EvaluationController extends Controller
 {
     public function index(Request $request){
-        //dd(Auth::user()->employee);
+        if($request->segment(2)){
+            $checkUser = User::where("id",base64_decode($request->segment(2)))->first();
+            if(!$checkUser){
+                return redirect(route('employee.index'));
+            }
+        }
         $evaluationModel = new EvaluationModel();
         if(Auth::user()->can_full_review){
+            $evaluationCheck = DB::table("user_answers")->where([
+                "given_by"  => Auth::user()->id,
+                "user_id"   => base64_decode($request->segment(2))
+            ])->whereYear('created_at', date('Y'))->first();
+            $questions = $evaluationModel->getQuestions([2]);
             $questions = $evaluationModel->getAllQuestion();
         }elseif(Auth::user()->is_hod){
+            $evaluationCheck = DB::table("user_answers")->where([
+                "given_by"  => Auth::user()->id,
+                "user_id"   => base64_decode($request->segment(2))
+            ])->whereYear('created_at', date('Y'))->first();
+            $questions = $evaluationModel->getQuestions([2]);
             $questions = $evaluationModel->getQuestions([3]);
         }else{
-            $questions = $evaluationModel->getQuestions([1,2]);
+            if($request->segment(2)){
+                $evaluationCheck = DB::table("user_answers")->where([
+                    "given_by"  => Auth::user()->id,
+                    "user_id"   => base64_decode($request->segment(2))
+                ])->whereYear('created_at', date('Y'))->first();
+                $questions = $evaluationModel->getQuestions([2]);
+            }else{
+                $evaluationCheck = DB::table("user_answers")->where([
+                    "given_by"  => Auth::user()->id,
+                    "user_id"   => Auth::user()->id
+                ])->whereYear('created_at', date('Y'))->first();
+                $questions = $evaluationModel->getQuestions([1]);
+            }
         }
 
+        $data["evaluationCheck"] = $evaluationCheck;
         $data["questions"] = $questions;
-        //dd($data);
         return view('evaluation.index')->with($data);
     }
 
@@ -40,6 +68,6 @@ class EvaluationController extends Controller
             }
         }
 
-        return redirect(route('employee.evaluation'));
+        return redirect(route('employee.index'));
     }
 }
