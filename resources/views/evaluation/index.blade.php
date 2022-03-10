@@ -88,6 +88,7 @@ use Illuminate\Support\Facades\Request;
 		@elseif(Auth::user()->is_hod)
 			@if(Request::segment(2))
 				@include("evaluation.manager")
+				@include("evaluation.peer")
 			@else
 				@include("evaluation.self")
 			@endif

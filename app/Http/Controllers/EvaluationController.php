@@ -30,8 +30,7 @@ class EvaluationController extends Controller
                 "given_by"  => Auth::user()->id,
                 "user_id"   => base64_decode($request->segment(2))
             ])->whereYear('created_at', date('Y'))->first();
-            $questions = $evaluationModel->getQuestions([2]);
-            $questions = $evaluationModel->getQuestions([3]);
+            $questions = $evaluationModel->getQuestions([2,3]);
         }else{
             if($request->segment(2)){
                 $evaluationCheck = DB::table("user_answers")->where([
